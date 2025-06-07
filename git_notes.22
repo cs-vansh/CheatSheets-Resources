@@ -1,0 +1,423 @@
+$  git --version
+git version 2.42.0.windows.2
+
+
+create and use github's account details
+	git config --global user.email "your-email@example.com"
+	git config --global user.name "Your Name"
+
+check if details updated using
+	git config --global user.name
+	git config --global user.email
+
+
+Creating a repository
+	git status
+		- run to check if the repo is not an existing git repo, if it is no need to rerun git init.
+		- chances of messing up by replacing/resetting settings of .git folder. or if repo had uncommitted changes, may cause issues with subsequent commands
+
+	git init
+		- Initialize repository tracking.
+		- Create .git folder
+
+	git branch -m <new_branch_name>
+
+		rename the current branch name to new_branch_name 
+
+	git add <file.txt> <file2.txt>
+
+		Add file and file2 to staging area
+
+	git add . 
+
+		Add all files
+
+	git status
+		After adding new files, git status will list all  changes to be committed
+
+	git rm --cached <file> 
+
+		Used to unstage a file
+
+	git commit -m "commit_message"
+
+		- It saves changes we have staged into git repo as a new commit
+		- This commit represents a snapshot of the project at a time.
+
+	git log
+
+		- shows the history of the repository. History of commits made to the repo.
+
+	git log --oneline
+		- shows a brief summary -> 1 line/commit
+
+
+	.gitignore
+
+		- a file created to ignore certain files for tracking because of the sensitive information they may contain.
+		- add a new filename in a separate line to ignore those file for tracking. 
+
+		- Although the .gitignore file is used to avoid tracking other files, it should be tracked (i.e. git add .gitignore, and then git commit -m "Add gitignore file")
+
+		- Search ".gitignore file for django" or ".gitignore file for Nodejs",etc. to get the file.
+
+	.gitkeep
+
+		- by default, empty folders are not tracked in git(as Git only tracks files and not directories). But certain projects require specific directory structures to exist. eg: 
+			-- Log directories(logs/)
+			-- Temporary file storage(temp/)
+			-- Configuration file placeholders(config/)
+
+		- .gitkeep is a file created in an empty directory to make sure that the directory is tracked regardless if the directory is empty or not.
+
+	HEAD
+		Head points to the current branch we are working in. 
+
+BRANCHING:-
+
+	git branch
+
+		shows list of branches and current active branch
+
+	git branch <new_branch_name>
+
+		creates a new branch with new_branch_name
+
+	git switch <branch_name>
+		
+		makes branch_name as the active branch.
+
+	git checkout <branch_name>
+		
+		makes branch_name as the active branch.	
+
+	As shown above, it takes 1 command to create and another to switch branch.
+		Alternative is to use the following:
+		
+		git switch -c "branch_name" 	
+
+			- This creates the branch branch_name and switches to the branch at once. 
+			- If the branch exists, it switches to the existing branch_name
+
+			- Avoid direct usage of switch -c, as if misspelled, a new branch would be created 
+
+
+	git branch -m <old-branch-name> <new-branch-name>
+
+		Rename a branch's name from old_branch_name to new_branch_name
+
+	git branch -d <branch-name>
+
+		Delete a branch
+
+Usual flow:
+	
+	Write -> Add -> Commit
+
+
+	(Git init - working directory) -> (git add - staging area) -> (git commit - repo --- it's local checkpoint) -> (git push - Github)
+
+
+Merging branches
+	
+	Fast-forward merge
+
+		A branch was cut from master to fix bugs. Master doesn't have any updates. 
+
+		git checkout master 
+			(make the master branch active, as we want to merge the fixed code into master) 
+
+		git merge bug-fix
+			(bug-fix is the branch name, whose code we want to merge into the master branch)
+
+
+	Not fast-forward merge
+
+		A branch was cut from master to fix bugs. Updates were made to both the branch as well as the master.
+
+		git checkout master
+		git merge bug-fix
+
+			The commands are same, but the difference lies in resolving the conflicts. 
+
+			after resolving conflict, another commit command would have to be run.
+
+			In not fast-forward merge, there are conflicts. Manually can be resolved within VS code.
+
+
+
+----------------------------------------------
+Git diff
+
+Comparing Staging Area with Repository
+	
+	A line was added into a txt document, which was then staged using git add (git add test.txt)
+
+git diff --staged
+	
+	eg output:
+		$ git diff --staged
+		diff --git a/test.txt b/test.txt
+		index 3caf563..2c59a22 100644
+		--- a/test.txt
+		+++ b/test.txt
+		@@ -10,6 +10,9 @@ Fourth bug Fix
+
+		 Fifth bug fix
+
+		+
+		+Another section added for description of bugs.
+		+
+		 --
+		 2024 is ending
+		 2025 is coming.
+		(END)
+
+
+	Meaning:
+
+		Content Changes
+		--- a/test.txt:
+			--- doesn't refer to removed area. It refers to the first file. A single - refers to the element removed, etc.
+
+		Refers to the "old" version of the file.
+		+++ b/test.txt:
+
+		Refers to the "new" version of the file.
+		@@ -10,6 +10,9 @@:
+
+		Specifies the location of the changes in the file.
+		-10,6: The old file had 6 lines starting at line 10.
+		+10,9: The new file has 9 lines starting at line 10.
+		Changes:
+
+		+: Lines added in the new version.
+			+Another section added for description of bugs.
+		No - in this diff: Indicates no lines were removed.
+
+Comparing between branches
+
+	git diff <branch-name-one> <branch-name-two>
+
+	or use
+
+	git diff branch-name-one..branch-name-two
+
+	(Spaces may cause errors sometimes, better to use two dots in between)
+
+Comparing Specific Commits:
+
+	git diff <commit-hash-one> <commit-hash-two>	
+
+---------------------------------------------
+Git stash
+	
+	Stash is a way to save your changes in a temporary location. 
+
+	It is useful when you want to make changes to a file but don’t want to commit them yet. You can then come back to the file later and apply the changes.
+
+	The main problem is that after making some changes in one branch, you can't switch to another branch without committing or staging the code. So, in order to temporarily save the code, git stash is the way.
+
+
+	git stash
+
+		This command saves your changes in a temporary location. It is like a stack of changes that you can access later.
+
+	git stash save "work in progress on X feature"
+		Naming the stash
+
+	git stash list
+		View the stash list
+
+	git stash apply
+		apply the stash
+
+	git stash apply stash@{0}
+		apply a specific stash. Here stash@{0} is the name of the stash. You can use the git stash list command to get the name of the stash.
+
+	git stash pop
+		This command applies the stash and drops it from the stash list at once.
+
+	git stash drop
+		drop the stash
+
+	git stash apply stash@{0} <branch-name>
+		applying stash to a specific branch
+
+	git stash clear
+		clearing a stash
+
+
+------------------------------
+
+Git tags
+
+	Tags are a way to mark a specific point in your repository. They are useful when you want to remember a specific version of your code or when you want to refer to a specific commit. Tags are like sticky notes that you can attach to your commits.
+
+	git tag <tag-name>
+		This command creates a new tag with the specified name. The tag will be attached to the current commit.
+
+	git tag -a <tag-name> -m "Release 1.0"
+
+		This command creates an annotated tag with the specified name and message. The tag will be attached to the current commit.
+
+	git tag
+		List all tags
+
+	git tag <tag-name> <commit-hash>
+		Tagging a specific commit
+
+	git push origin <tag-name>
+		push tags to a remote repository
+
+	git tag -d <tag-name>
+		delete a tag
+
+	git push origin :<tag-name>
+		delete tag on remote repository.
+
+---------------------------------------------------
+
+Rebase
+	Rewrites history 
+	
+	Rebase is a powerful tool in Git that allows you to move a branch to a new starting point. It effectively replays the commits from the original base onto the new base. This can be useful for keeping a cleaner, linear project history.
+
+
+	Suppose you have a feature branch called feature-branch that you want to rebase onto the main branch.
+
+
+	Ensure you are on the branch you want to rebase:
+	
+
+		Either
+			git checkout feature-branch   	(go to feature branch)
+			git rebase master				(rebase)
+		or 
+			git rebase master feature_branch		(rebase without changing branches)
+
+			This will replay the commits from feature-branch on top of the latest changes in master.
+
+
+	If there are conflicts, those would be required to be resolved. After which the following can be run:	
+
+		git add <resolved-files>
+	
+		git rebase --continue
+
+			Try to avoid —force option when using rebase. It can cause issues with the project history
+
+
+Interactive Rebase Summary
+	Purpose:
+	Edit, reorder, squash, or delete commits in your branch to clean up commit history.
+
+	git rebase -i commit_id/HEAD~<number_of_commits>
+
+		Actions in Editor:
+			pick: Keep the commit as-is.
+			reword: Edit the commit message.
+			edit: Modify the commit's content (staging changes or files).
+			squash: Combine the commit with the previous one.
+			drop: Remove the commit.
+
+	Steps:
+		Start interactive rebase:
+		git rebase -i HEAD~<n>
+
+		Modify actions (pick, squash, etc.) for the commits.
+
+		Save and exit the editor.
+
+		Follow Git prompts:
+
+		//stage any changes made, or merge conflicts resolved.
+			using git add file1.txt file2.txt ....
+
+		Use git rebase --continue to proceed after edits.
+
+		Finish rebase.
+
+	Interactive rebasing ensures a clean, polished commit history!
+
+	git reset HEAD~1
+		The commit is undone.
+		The changes in the working directory (your files) are preserved.
+		The changes are unstaged (i.e., they are no longer part of the index).
+
+//we can simply remove the commits by removing them from the git-rebase-todo
+//or you can reorder the commits, by changing the order in git-rebase-todo
+
+----------------------------------------------------------
+
+git reflog
+	
+
+Purpose:
+	Tracks changes to the HEAD reference and branch tips, including actions like rebases, resets, and checkouts.
+
+Features:	
+	Shows all movements of HEAD (even those that don't appear in git log), including commits that were orphaned or detached.
+	
+	Useful for recovering lost commits after actions like:
+		Branch deletion
+		Rebase
+		Reset
+		Detached HEAD state
+Advantage:
+	Helps you locate and recover commits that are no longer part of the branch history but were referenced at some point.
+
+	git log Purpose:
+			Displays the commit history of a repository or a specific branch.
+
+
+
+-----------------------------------------------------
+
+Pull vs Fetch
+
+	Pull = Fetch + Merge
+
+		Fetch -> downloads remote commits
+		merge -> merge local and remote commits
+
+	Fetch
+
+		Just downloads remote repo, but doesn't merge local and remote commits.
+
+		The advantage is with transparency. The whole objective of getting a fetch and not merging (as in pull) is to keep the control over the entire thing.
+
+		- Fetch can be used to get commit,
+			(Suppose there were changes both on the local machine and remote repo:)
+			 
+			 and then rebase can be used to keep things linear (i.e. local changes can be put on top of remote repo changes, resulting in rebasing)
+
+			 or else standard merge can be used(both the remote and local repos can be merged as a separate commit, although creating another commit )
+
+
+--------------------------------------------------
+
+cherry pick
+
+	git log --oneline 
+
+		lists all commits with their hashes.
+
+
+	git cherry-pick hash_id
+
+		applies the changes in hash_id to the current branch.
+
+		(cherry pick can be used to apply changes even from other branches to the main branch directly. We can choose which specific commits we want to apply in the main )
+
+	git cherry-pick --continue
+
+		If the commit you're cherry-picking conflicts with existing changes in the current branch, Git will pause and ask you to resolve the conflicts before proceeding.
+
+	git cherry-pick first_hash second_hash
+
+		git is going to apply one change at a time, in the order specified. 
+
+		we will have 2 commits applied from the current state(it won't be a single commit)
+
+	 
